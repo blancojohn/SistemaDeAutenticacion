@@ -1,10 +1,12 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { ToastContainer } from 'react-toastify';
 import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
 
 import { Home } from "./pages/home";
 import { Signup } from "./pages/signup";
+import { Login } from "./pages/login";
 import { Single } from "./pages/single";
 import injectContext from "./store/appContext";
 
@@ -27,9 +29,11 @@ const Layout = () => {
                     <Routes>
                         <Route element={<Home />} path="/" />
                         <Route element={<Signup />} path="/signup" />
+                        <Route element={<Login />} path="/login" />
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
+                    <ToastContainer />
                     <Footer />
                 </ScrollToTop>
             </BrowserRouter>
