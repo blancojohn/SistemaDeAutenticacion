@@ -13,10 +13,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 				email: "",
 				password: ""
 			},
+			/* Las siguientes propiedades guardan los datos de usuario luego de iniciar sesión
+			   porque después son untilizados en el sessionStorage */
+			user: null,
+			accessToken: null, /* Propiedad que recibe el valor de access_token desde la API cuando crea el token */
 
 			dominio: "http://127.0.0.1:3001",
 
-			message: null,
 			demo: [
 				{
 					title: "FIRST",
@@ -32,6 +35,40 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 		},
 		actions: {
+			/* Se ejecuta con useEffect dentro del componente Me */
+			routePrivateUser: () => {
+				const { dominio, accessToken } = getStore()
+				const url = `${dominio}/api/private`
+				const solicitud = {
+					method: 'GET', /* Se debe especificar el  tipo de solicitud y agregar headers para poder pasar el token generado en el  login */
+					headers: {
+						"Content-type": "application/json",
+						"Authorization": `Bearer ${accessToken}` 
+					}
+				}
+				fetch(url, solicitud)
+					.then(response => {
+						return response.json()
+					})
+					.then(datos => {
+						if (datos.msg) toast.error(datos.msg)
+						else {
+							setStore({
+								user: datos
+							})
+						}
+					})
+			},
+
+			/* Mantiene abierta la sesión del usuario por los valores asignados
+			   a las propiedades del store de sessionStorage. Se ejecuta dentro appContext */
+			checkCurrentUser: () => {
+				setStore({
+					accessToken: sessionStorage.getItem('access_token'),
+					user: JSON.parse(sessionStorage.getItem('user'))/* Convierte de nuevo los datos en formato json */
+				})
+			},
+
 			handleSubmitRegister: (e) => {
 				e.preventDefault()
 
@@ -53,7 +90,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				const request = getFetch(url, solicitud)
 				request.then((response) => response.json()).then((datos) => {
-					if (datos.messagge){
+					if (datos.messagge) {
 						toast.error(datos.messagge)
 					} else {
 						toast.success(datos.success)
@@ -101,17 +138,25 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				const request = getFetch(url, solicitud)
 				request.then((response) => response.json()).then((datos) => {
-					if (datos.messagge){
+					if (datos.messagge) {
 						toast.error(datos.messagge)
 					} else {
 						toast.success(datos.success)
 						setStore({
 							loginUser: {
 								email: "",
-								password: ""
-							}
+								password: "",
+							},
+
+							/* Se setean las siguientes propiedades del store con los datos de usuario 
+								cuando hace login para después usarlas en el sessionStorage */
+							user: datos.user,
+							accessToken: datos.access_token
 						})
 					}
+					/* A continuación acceso al sessionStorage para mantener los datos de usuario mientras navega con su usuario */
+					sessionStorage.setItem('access_token', datos.access_token)
+					sessionStorage.setItem('user', JSON.stringify(datos.user))/* user es un diccionario en la tabla por lo tanto debe ser covertido en string*/
 				}).catch(error => console.log(error))
 			},
 
@@ -136,19 +181,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			exampleFunction: () => {
 				getActions().changeColor(0, "green");
 			},
-
-			getMessage: async () => {
-				try {
-					// fetching data from the backend
-					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
-					const data = await resp.json()
-					setStore({ message: data.message })
-					// don't forget to return something, that is how the async resolves
-					return data;
-				} catch (error) {
-					console.log("Error loading message from backend", error)
-				}
-			},
+	
 			changeColor: (index, color) => {
 				//get the store
 				const store = getStore();
@@ -169,4 +202,4 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 export default getState;
 
-	
+

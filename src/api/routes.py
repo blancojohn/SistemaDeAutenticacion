@@ -81,13 +81,7 @@ def login_user():
 @api.route('private')
 @jwt_required()
 def private():
-    return({"messagge": "Testing route private"})
+    id= get_jwt_identity() #Accede a la info que se guarda en el token.
+    user= User.query.get(id) #Almacena la búsqueda del usuario por el id.
+    return jsonify(user.serialize()), 200
 
-@api.route('/hello', methods=['POST', 'GET'])
-def handle_hello():
-
-    response_body = {
-        "message": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
-    }
-
-    return jsonify(response_body), 200
