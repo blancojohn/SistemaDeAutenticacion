@@ -8,6 +8,17 @@ export const Signup = () => {
 
 	return (
 		<>
+			<nav className="navbar navbar-light bg-light">
+				<div className="container">
+					<div className="ms-auto">
+						<Link to="/login">
+							<button className="btn btn-primary">Inicia sesión</button>
+						</Link>
+					</div>
+				</div>
+			</nav >
+
+			<h1 className="d-flex justify-content-center">Regístrate en segundos</h1>
 			<form className='w-50 mx-auto my-5' onSubmit={actions.handleSubmitRegister}>
 				<div className='mb-3'>
 					<label htmlFor='email' className='form-label'>Email</label>

@@ -42,7 +42,7 @@ def register_user():
     db.session.add(user)
     db.session.commit()
 
-    return jsonify({"success": "Registro satisfactorio. Por favor iniciar sesión"}), 200
+    return jsonify({"success": "Registro satisfactorio. Por favor hacer click en inicia sesión"}), 200
 
 @api.route('/login', methods=['POST'])
 def login_user():

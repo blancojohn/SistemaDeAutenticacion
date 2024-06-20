@@ -173,6 +173,16 @@ const getState = ({ getStore, getActions, setStore }) => {
 				})
 			},
 
+			logOut: () => {
+				setStore({
+					user: null,
+					accessToken: null,
+				})
+
+				sessionStorage.removeItem('user')
+				sessionStorage.removeItem('access_token')
+			},
+
 			getFetch: (url, solicitud) => {
 				return fetch(url, solicitud)
 			},
